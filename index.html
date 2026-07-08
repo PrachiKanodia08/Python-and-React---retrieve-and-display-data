@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React on Tomcat Without NPM</title>
+    
+    
+    <!-- Load React and ReactDOM Core Libraries via CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+
+    <!-- Load Babel to compile JSX dynamically in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body>
+
+    <!-- Target container where React will render the UI -->
+    <div id="root"></div>
+
+    <!-- Note the type="text/babel" - this triggers Babel execution -->
+    <script type="text/babel" data-type="module">
+        // Define a simple functional component
+
+        const { useState, useEffect } = React;
+
+        function App() {
+
+            const [record, setRecord] = useState({
+                "count": 0,
+                "timestamp": 'Waiting...'
+            })
+
+            useEffect(() => {
+                
+                const timer = setInterval(() => {
+                    fetch("http://192.168.1.7:5000/api/counter")
+                    .then(res => res.json())
+                    .then(json => setRecord(json))
+                }, 1000)
+
+                return () => clearInterval(timer)
+
+            }, []);
+
+            return (
+                <div>
+                    <p>Count: {record.count}</p>
+                    <p>Timestamp: {record.timestamp}</p>
+                    <p>Local Time: {record.timestamp ? new Date(record.timestamp).toLocaleString() : ''}</p>
+                    <p>Role: {record.role}</p>
+                </div>
+            );
+
+        }
+
+        // Render the component into the root DOM element
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+</body>
+</html>
