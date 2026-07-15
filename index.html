@@ -28,18 +28,15 @@
 
         function App() {
 
-            const [record, setRecord] = useState({
-                "count": 0,
-                "timestamp": 'Waiting...'
-            })
+            const [sensors, setSensors] = useState([])
 
             useEffect(() => {
                 
                 const timer = setInterval(() => {
-                    fetch("http://192.168.1.7:5000/api/counter")
+                    fetch("http://192.168.1.7:5000/api/sensors")
                     .then(res => res.json())
-                    .then(json => setRecord(json))
-                }, 1000)
+                    .then(json => setSensors(json.data))
+                }, 5000)
 
                 return () => clearInterval(timer)
 
@@ -47,13 +44,22 @@
 
             return (
                 <div>
-                    <p>Count: {record.count}</p>
-                    <p>Timestamp: {record.timestamp}</p>
-                    <p>Local Time: {record.timestamp ? new Date(record.timestamp).toLocaleString() : ''}</p>
-                    <p>Role: {record.role}</p>
-                </div>
-            );
-
+                    <h2>Sensor Data</h2>
+                    {sensors.length > 0 ? 
+                        <div>
+                            {sensors.map((sensor) => (
+                                <div key={sensor.sensor_room}>
+                                    <h3>{sensor.sensor_room}</h3>
+                                    <p>Motion: {sensor.motion ? "Present" : "Empty"}</p>
+                                    <p>Time: {new Date(sensor.timestamp).toLocaleString()}</p>
+                                </div>
+                            ))
+                            }
+                        </div>
+                    : "Retieving Data..."}
+                    
+                </div> 
+            )
         }
 
         // Render the component into the root DOM element
