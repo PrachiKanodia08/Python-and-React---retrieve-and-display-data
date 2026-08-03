@@ -29,14 +29,24 @@
         function App() {
 
             const [sensors, setSensors] = useState([])
+            
+            const [rooms, setRooms] = useState([
+                { room: 'Living Room', x: 40, y: 40, w: 260, h: 200 },
+                { room: 'Dining Room', x: 300, y: 40, w: 180, h: 200 },
+                { room: 'Kitchen', x: 480, y: 40, w: 160, h: 200 },
+                { room: 'Bed Room', x: 40, y: 240, w: 260, h: 180 },
+                { room: 'Toilet', x: 300, y: 240, w: 120, h: 180 },
+            ]);
+
+            const dataByRoom = Object.fromEntries(rooms.map((r) => [r.room, r]))
 
             useEffect(() => {
                 
                 const timer = setInterval(() => {
-                    fetch("http://192.168.1.7:5000/api/sensors")
+                    fetch("http://192.168.1.10:5000/api/sensors")
                     .then(res => res.json())
                     .then(json => setSensors(json.data))
-                }, 5000)
+                }, 3000)
 
                 return () => clearInterval(timer)
 
@@ -47,17 +57,28 @@
                     <h2>Sensor Data</h2>
                     {sensors.length > 0 ? 
                         <div>
-                            {sensors.map((sensor) => (
-                                <div key={sensor.sensor_room}>
-                                    <h3>{sensor.sensor_room}</h3>
-                                    <p>Motion: {sensor.motion ? "Present" : "Empty"}</p>
-                                    <p>Time: {new Date(sensor.timestamp).toLocaleString()}</p>
-                                </div>
-                            ))
-                            }
+                            <svg width="680" height="460" style={{ border: '1px solid #ccc' }}>
+                                {sensors.map((sensor) => {
+
+                                    console.log("this",sensor)
+                                    const room_dim = dataByRoom[sensor.sensor_room]
+
+                                    return (                                
+                                        <g key={sensor.sensor_room}>
+                                            <rect x={room_dim.x} y={room_dim.y} width={room_dim.w} height={room_dim.h} 
+                                                fill={sensor.motion ? "#b5e550": "#E5E4E2"} 
+                                                stroke={sensor.motion ? "#809c13": "#D3D3D3"} 
+                                                strokeWidth={2} 
+                                            />
+                                            <text x={room_dim.x +10} y={room_dim.y +20} fontSize={12}>{sensor.sensor_room} </text>
+                                            <text x={room_dim.x +10} y={room_dim.y +35} fontSize={12}>Time: {new Date(sensor.timestamp).toLocaleString()}</text>
+                                        </g>
+                                    )
+                                })
+                                }
+                            </svg>                            
                         </div>
-                    : "Retieving Data..."}
-                    
+                    : <div>Retieving Data...</div>}
                 </div> 
             )
         }

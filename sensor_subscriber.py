@@ -1,8 +1,8 @@
 import json
-
 import paho.mqtt.client as mqtt
 
-BROKER = "localhost"
+
+BROKER = "test.mosquitto.org"
 PORT = 1883
 TOPIC = "factory/motion"
 
