@@ -9,10 +9,12 @@ CORS(app)
 
 # HP/APT_NAME/HOUSE_NO/Sensor1/MOVED_AWAY -> Object Moved Away
 # HP/APT_NAME/HOUSE_NO/Sensor1/DETECTED -> Movement Detected
+# HP/APT_NAME/HOUSE_NO/Sensor1/ROOM EMPTY -> Room Empty
 
-BROKER = "test.mosquitto.org"
-PORT = 1883
-TOPIC = "factory/motion"
+BROKER = "broker.hivemq.com"
+# PORT = 8883 1883
+PORT = 8883
+# TOPIC = "HP/CONSUMER_NO/+/+"
 
 # Latest data for React
 latest_sensor_data = {}
@@ -25,7 +27,7 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
 
     print("Flask MQTT Connected")
 
-    client.subscribe(TOPIC)
+    client.subscribe("HP/CONSUMER_NO/+/+")
 
 
 def on_message(client, userdata, msg):
@@ -33,6 +35,7 @@ def on_message(client, userdata, msg):
     try:
 
         sensor = json.loads(msg.payload.decode())
+        print("sensor: ",sensor)
 
         sensor_room = sensor["sensor_room"]
 
@@ -46,6 +49,8 @@ def on_message(client, userdata, msg):
 
 
 mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+
+mqtt_client.tls_set()
 
 mqtt_client.on_connect = on_connect
 

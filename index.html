@@ -24,11 +24,28 @@
     <script type="text/babel" data-type="module">
         // Define a simple functional component
 
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         function App() {
 
             const [sensors, setSensors] = useState([])
+            //const [rooms, setRooms] = useState([])
+
+            // const [sensors, setSensors] = useState([
+            //     {"sensor_room": "Bed Room", "motion": false, "timestamp": "2026-07-22T13:15:08.576777"},
+            //     {"sensor_room": "Kitchen", "motion": true, "timestamp": "2026-07-22T13:15:08.603907"},
+            //     {"sensor_room": "Living Room", "motion": true, "timestamp": "2026-07-22T13:15:10.416321"},
+            //     {"sensor_room": "Dining Room", "motion": false, "timestamp": "2026-07-22T13:15:11.375100"},
+            //     {"sensor_room": "Toilet", "motion": false, "timestamp": "2026-07-22T13:15:14.556796"}
+            // ])
+
+            // const [sensors, setSensors] = useState([
+            //     {"sensor_room": "Bed Room", "motion": "Object Moved Away", "timestamp": "2026-07-22T13:15:08.576777"},
+            //     {"sensor_room": "Kitchen", "motion": "Object Moved Away", "timestamp": "2026-07-22T13:15:08.603907"},
+            //     {"sensor_room": "Living Room", "motion": "Room Empty", "timestamp": "2026-07-22T13:15:10.416321"},
+            //     {"sensor_room": "Dining Room", "motion": "Movement Detected", "timestamp": "2026-07-22T13:15:11.375100"},
+            //     {"sensor_room": "Toilet", "motion": "Movement Detected", "timestamp": "2026-07-22T13:15:14.556796"}
+            // ])
             
             const [rooms, setRooms] = useState([
                 { room: 'Living Room', x: 40, y: 40, w: 260, h: 200 },
@@ -66,8 +83,8 @@
                                     return (                                
                                         <g key={sensor.sensor_room}>
                                             <rect x={room_dim.x} y={room_dim.y} width={room_dim.w} height={room_dim.h} 
-                                                fill={sensor.motion ? "#b5e550": "#E5E4E2"} 
-                                                stroke={sensor.motion ? "#809c13": "#D3D3D3"} 
+                                                fill={sensor.motion === "Movement Detected" ? "#b5e550" : (sensor.motion === "Object Moved Away"? "#D1F28D" : "#D3D3D3")}      // "#b5e550" - green , "#E5E4E2" - gray
+                                                stroke={sensor.motion === "Movement Detected" ? "#b5e550" : (sensor.motion === "Object Moved Away"? "#D1F28D" : "#D3D3D3")}    // "#809c13" - green , "#D3D3D3" - gray
                                                 strokeWidth={2} 
                                             />
                                             <text x={room_dim.x +10} y={room_dim.y +20} fontSize={12}>{sensor.sensor_room} </text>
@@ -81,6 +98,7 @@
                     : <div>Retieving Data...</div>}
                 </div> 
             )
+
         }
 
         // Render the component into the root DOM element

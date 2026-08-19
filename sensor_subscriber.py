@@ -2,16 +2,16 @@ import json
 import paho.mqtt.client as mqtt
 
 
-BROKER = "test.mosquitto.org"
-PORT = 1883
-TOPIC = "factory/motion"
+BROKER = "broker.hivemq.com"
+PORT = 8883
+# TOPIC = "factory/motion"
 
 OUTPUT_FILE = "sensor_data.txt"
 
 
 def on_connect(client, userdata, flags, rc):
     print("Connected")
-    client.subscribe(TOPIC)
+    client.subscribe("HP/CONSUMER_NO/+/+")
 
 
 def on_message(client, userdata, msg):
@@ -26,9 +26,11 @@ def on_message(client, userdata, msg):
 
 
 client = mqtt.Client()
+client.tls_set()
 
 client.on_connect = on_connect
 client.on_message = on_message
+
 
 client.connect(BROKER, PORT)
 
