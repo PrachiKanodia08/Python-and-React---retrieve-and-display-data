@@ -5,13 +5,14 @@ import paho.mqtt.client as mqtt
 BROKER = "broker.hivemq.com"
 PORT = 8883
 # TOPIC = "factory/motion"
-
+# TOPIC = "HP/CONSUMER_NO/+/+"
+TOPIC = "PRESENCE/LD2410/STATUS"
 OUTPUT_FILE = "sensor_data.txt"
 
 
 def on_connect(client, userdata, flags, rc):
     print("Connected")
-    client.subscribe("HP/CONSUMER_NO/+/+")
+    client.subscribe(TOPIC)
 
 
 def on_message(client, userdata, msg):

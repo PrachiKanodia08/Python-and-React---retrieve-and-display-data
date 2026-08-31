@@ -24,7 +24,7 @@
     <script type="text/babel" data-type="module">
         // Define a simple functional component
 
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
 
         function App() {
 
@@ -46,21 +46,29 @@
             //     {"sensor_room": "Dining Room", "motion": "Movement Detected", "timestamp": "2026-07-22T13:15:11.375100"},
             //     {"sensor_room": "Toilet", "motion": "Movement Detected", "timestamp": "2026-07-22T13:15:14.556796"}
             // ])
+
+            // const [sensors, setSensors] = useState([
+            //     {"sensor": "1", "status": "Not Detected", "light": 91, "Moving Target": true, "Moving Target Dist": 28, "Stationary Target": false, "Stationary Target Dist": 26, "timestamp": "2026-08-19T22:32:48.326478"},
+            //     {"sensor": "2", "status": "Not Detected", "light": 91, "Moving Target": false, "Moving Target Dist": 28, "Stationary Target": false, "Stationary Target Dist": 26, "timestamp": '2026-08-19T22:32:48.326478'},
+            //     {"sensor": "3", "status": "Detected", "light": 5, "Moving Target": false, "Moving Target Dist": 4, "Stationary Target": true, "Stationary Target Dist": 6, "timestamp": '2026-08-19T22:32:54.328052'},
+            //     {"sensor": "4", "status": "Not Detected", "light": 46, "Moving Target": true, "Moving Target Dist": 11, "Stationary Target": true, "Stationary Target Dist": 26, "timestamp": '2026-08-19T22:33:00.329029'},
+            //     {"sensor": "5", "status": "Detected", "light": 43, "Moving Target": false, "Moving Target Dist": 6, "Stationary Target": false, "Stationary Target Dist": 23, "timestamp": '2026-08-19T22:33:12.331269'}
+            // ])
             
             const [rooms, setRooms] = useState([
-                { room: 'Living Room', x: 40, y: 40, w: 260, h: 200 },
-                { room: 'Dining Room', x: 300, y: 40, w: 180, h: 200 },
-                { room: 'Kitchen', x: 480, y: 40, w: 160, h: 200 },
-                { room: 'Bed Room', x: 40, y: 240, w: 260, h: 180 },
-                { room: 'Toilet', x: 300, y: 240, w: 120, h: 180 },
-            ]);
+                { sensor: "1", room: 'Living Room', x: 40, y: 40, w: 260, h: 200 },
+                { sensor: "2", room: 'Dining Room', x: 300, y: 40, w: 180, h: 200 },
+                { sensor: "3", room: 'Kitchen', x: 480, y: 40, w: 160, h: 200 },
+                { sensor: "4", room: 'Bed Room', x: 40, y: 240, w: 220, h: 180 },
+                { sensor: "5", room: 'Toilet', x: 260, y: 240, w: 160, h: 180 },
+            ])
 
-            const dataByRoom = Object.fromEntries(rooms.map((r) => [r.room, r]))
+            const dataByRoom = Object.fromEntries(rooms.map((r) => [r.sensor, r]))
 
             useEffect(() => {
                 
                 const timer = setInterval(() => {
-                    fetch("http://192.168.1.10:5000/api/sensors")
+                    fetch("http://192.168.1.7/:5000/api/sensors")
                     .then(res => res.json())
                     .then(json => setSensors(json.data))
                 }, 3000)
@@ -75,20 +83,22 @@
                     {sensors.length > 0 ? 
                         <div>
                             <svg width="680" height="460" style={{ border: '1px solid #ccc' }}>
-                                {sensors.map((sensor) => {
+                                {sensors.map((s) => {
 
-                                    console.log("this",sensor)
-                                    const room_dim = dataByRoom[sensor.sensor_room]
+                                    const room_dim = dataByRoom[s.sensor]
 
                                     return (                                
-                                        <g key={sensor.sensor_room}>
+                                        <g key={s.sensor}>
                                             <rect x={room_dim.x} y={room_dim.y} width={room_dim.w} height={room_dim.h} 
-                                                fill={sensor.motion === "Movement Detected" ? "#b5e550" : (sensor.motion === "Object Moved Away"? "#D1F28D" : "#D3D3D3")}      // "#b5e550" - green , "#E5E4E2" - gray
-                                                stroke={sensor.motion === "Movement Detected" ? "#b5e550" : (sensor.motion === "Object Moved Away"? "#D1F28D" : "#D3D3D3")}    // "#809c13" - green , "#D3D3D3" - gray
+                                                fill={s.status === "Detected" ? "#b5e550" : "#E5E4E2"}      // "#b5e550" - green , "#E5E4E2" - gray
+                                                stroke={s.status === "Detected" ? "#809c13" : "#D3D3D3"}    // "#809c13" - green , "#D3D3D3" - gray
                                                 strokeWidth={2} 
                                             />
-                                            <text x={room_dim.x +10} y={room_dim.y +20} fontSize={12}>{sensor.sensor_room} </text>
-                                            <text x={room_dim.x +10} y={room_dim.y +35} fontSize={12}>Time: {new Date(sensor.timestamp).toLocaleString()}</text>
+                                            <text x={room_dim.x +10} y={room_dim.y +20} fontSize={12}>{room_dim.room} </text>
+                                            <text x={room_dim.x +10} y={room_dim.y +35} fontSize={12}>Date: {new Date(s.timestamp).toLocaleDateString()}</text>
+                                            <text x={room_dim.x +10} y={room_dim.y +50} fontSize={12}>
+                                                {s.status === "Detected" ? "Occupied since" : "Empty since"} {new Date(s.timestamp).toLocaleTimeString()}
+                                            </text>
                                         </g>
                                     )
                                 })

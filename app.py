@@ -15,6 +15,7 @@ BROKER = "broker.hivemq.com"
 # PORT = 8883 1883
 PORT = 8883
 # TOPIC = "HP/CONSUMER_NO/+/+"
+TOPIC = "PRESENCE/LD2410/STATUS"
 
 # Latest data for React
 latest_sensor_data = {}
@@ -27,21 +28,21 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
 
     print("Flask MQTT Connected")
 
-    client.subscribe("HP/CONSUMER_NO/+/+")
+    client.subscribe(TOPIC)
 
 
 def on_message(client, userdata, msg):
 
     try:
 
-        sensor = json.loads(msg.payload.decode())
-        print("sensor: ",sensor)
+        sensor_data = json.loads(msg.payload.decode())
+        print("sensor: ", sensor_data)
 
-        sensor_room = sensor["sensor_room"]
+        sensor = sensor_data["sensor"]
 
         with data_lock:
 
-            latest_sensor_data[sensor_room] = sensor
+            latest_sensor_data[sensor] = sensor_data
 
     except Exception as e:
 
