@@ -33,6 +33,8 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
 
 def on_message(client, userdata, msg):
 
+    global latest_sensor_data
+
     try:
 
         sensor_data = json.loads(msg.payload.decode())
