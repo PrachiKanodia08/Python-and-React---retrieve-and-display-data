@@ -28,47 +28,43 @@
 
         function App() {
 
-            const [sensors, setSensors] = useState([])
-            //const [rooms, setRooms] = useState([])
-
-            // const [sensors, setSensors] = useState([
-            //     {"sensor_room": "Bed Room", "motion": false, "timestamp": "2026-07-22T13:15:08.576777"},
-            //     {"sensor_room": "Kitchen", "motion": true, "timestamp": "2026-07-22T13:15:08.603907"},
-            //     {"sensor_room": "Living Room", "motion": true, "timestamp": "2026-07-22T13:15:10.416321"},
-            //     {"sensor_room": "Dining Room", "motion": false, "timestamp": "2026-07-22T13:15:11.375100"},
-            //     {"sensor_room": "Toilet", "motion": false, "timestamp": "2026-07-22T13:15:14.556796"}
-            // ])
-
-            // const [sensors, setSensors] = useState([
-            //     {"sensor_room": "Bed Room", "motion": "Object Moved Away", "timestamp": "2026-07-22T13:15:08.576777"},
-            //     {"sensor_room": "Kitchen", "motion": "Object Moved Away", "timestamp": "2026-07-22T13:15:08.603907"},
-            //     {"sensor_room": "Living Room", "motion": "Room Empty", "timestamp": "2026-07-22T13:15:10.416321"},
-            //     {"sensor_room": "Dining Room", "motion": "Movement Detected", "timestamp": "2026-07-22T13:15:11.375100"},
-            //     {"sensor_room": "Toilet", "motion": "Movement Detected", "timestamp": "2026-07-22T13:15:14.556796"}
-            // ])
-
-            // const [sensors, setSensors] = useState([
-            //     {"sensor": "1", "status": "Not Detected", "light": 91, "Moving Target": true, "Moving Target Dist": 28, "Stationary Target": false, "Stationary Target Dist": 26, "timestamp": "2026-08-19T22:32:48.326478"},
-            //     {"sensor": "2", "status": "Not Detected", "light": 91, "Moving Target": false, "Moving Target Dist": 28, "Stationary Target": false, "Stationary Target Dist": 26, "timestamp": '2026-08-19T22:32:48.326478'},
-            //     {"sensor": "3", "status": "Detected", "light": 5, "Moving Target": false, "Moving Target Dist": 4, "Stationary Target": true, "Stationary Target Dist": 6, "timestamp": '2026-08-19T22:32:54.328052'},
-            //     {"sensor": "4", "status": "Not Detected", "light": 46, "Moving Target": true, "Moving Target Dist": 11, "Stationary Target": true, "Stationary Target Dist": 26, "timestamp": '2026-08-19T22:33:00.329029'},
-            //     {"sensor": "5", "status": "Detected", "light": 43, "Moving Target": false, "Moving Target Dist": 6, "Stationary Target": false, "Stationary Target Dist": 23, "timestamp": '2026-08-19T22:33:12.331269'}
-            // ])
+            const SCALE = 22         // pixels per foot
+            const TOTAL_W = 30        // ft
+            const TOTAL_H = 20        // ft
+            const PAD = 60            // space for dimension lines/labels
+            const WALL = 4            // wall line thickness (px)
+            const px = (ft) => ft * SCALE
+            
             
             const [rooms, setRooms] = useState([
-                { sensor: "1", room: 'Living Room', x: 40, y: 40, w: 260, h: 200 },
-                { sensor: "2", room: 'Dining Room', x: 300, y: 40, w: 180, h: 200 },
-                { sensor: "3", room: 'Kitchen', x: 480, y: 40, w: 160, h: 200 },
-                { sensor: "4", room: 'Bed Room', x: 40, y: 240, w: 220, h: 180 },
-                { sensor: "5", room: 'Toilet', x: 260, y: 240, w: 160, h: 180 },
+                { sensor: "1", room: 'Living Room', x: 18, y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
+                { sensor: "2", room: 'Dining Room',  x: 10, y: 12, w: 20, h: 8,  fillColor: '#e8e4f5'},
+                { sensor: "3", room: 'Kitchen', x: 0,  y: 12, w: 10, h: 8,  fillColor: '#e8e4f5'},
+                { sensor: "4", room: 'Bed Room', x: 0,  y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
+                { sensor: "5", room: 'Toilet',  x: 12, y: 0,  w: 6,  h: 7,  fillColor: '#e8e4f5'},
             ])
+
+            // Door openings: wall segment to leave blank + swing arc.
+            // wall: 'h' = gap cut into a horizontal wall line, 'v' = vertical wall line.
+            const doors = [
+                { wall: 'v', x: 12, y1: 3,  y2: 6,  hinge: 'top' }, // Bedroom <-> Toilet
+                { wall: 'h', x1: 12, x2: 15, y: 12,  hinge: 'left'  }, // Bed Room <-> Dining (lower)
+                { wall: 'v', x: 18, y1: 3,  y2: 6,  hinge: 'top' }, // Toilet <-> Living Room
+                { wall: 'h', x1: 22, x2: 25, y: 12,  hinge: 'left'   }, // Living Room <-> Dining
+                { wall: 'v', x: 10, y1: 14, y2: 17, hinge: 'top' }, // Kitchen <-> Dining
+                { wall: 'h', x1: 2,  x2: 5,  y: 0,   hinge: 'left' }, // front door (Bed Room wall)
+
+                // NEW: passway between Bedroom and Living Room via the corridor below the Toilet
+                { wall: 'v', x: 12, y1: 8, y2: 11, hinge: 'top' }, // Bedroom -> corridor
+                { wall: 'v', x: 18, y1: 8, y2: 11, hinge: 'top' }, // corridor -> Living Room
+            ]
 
             const dataByRoom = Object.fromEntries(rooms.map((r) => [r.sensor, r]))
 
             useEffect(() => {
                 
                 const timer = setInterval(() => {
-                    fetch("http://192.168.1.5:5000/api/sensors")
+                    fetch("http://192.168.1.21:5000/api/sensors")
                     .then(res => res.json())
                     .then(json => setSensors(json.data))
                 }, 3000)
@@ -78,34 +74,99 @@
             }, []);
 
             return (
-                <div>
-                    <h2>Sensor Data</h2>
-                    {sensors.length > 0 ? 
-                        <div>
-                            <svg width="680" height="460" style={{ border: '1px solid #ccc' }}>
-                                {sensors.map((s) => {
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Arial, sans-serif', paddingTop: '16px' }}>
+                    <h2 style={{ marginBottom: '4px' }}>Sensor Data</h2>
+                    {sensors.length > 0 ?
+                        <div style={{ background: '#fff', padding: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
+                            <svg
+                                width={px(TOTAL_W) + PAD * 2}
+                                height={px(TOTAL_H) + PAD * 2}
+                            >
 
-                                    const room_dim = dataByRoom[s.sensor]
+                                <g transform={`translate(${PAD}, ${PAD})`}>
 
-                                    return (                                
-                                        <g key={s.sensor}>
-                                            <rect x={room_dim.x} y={room_dim.y} width={room_dim.w} height={room_dim.h} 
-                                                fill={s.status === "Detected" ? "#b5e550" : "#E5E4E2"}      // "#b5e550" - green , "#E5E4E2" - gray
-                                                stroke={s.status === "Detected" ? "#809c13" : "#D3D3D3"}    // "#809c13" - green , "#D3D3D3" - gray
-                                                strokeWidth={2} 
-                                            />
-                                            <text x={room_dim.x +10} y={room_dim.y +20} fontSize={12}>{room_dim.room} </text>
-                                            <text x={room_dim.x +10} y={room_dim.y +35} fontSize={12}>Date: {new Date(s.timestamp).toLocaleDateString()}</text>
-                                            <text x={room_dim.x +10} y={room_dim.y +50} fontSize={12}>
-                                                {s.status === "Detected" ? "Occupied since" : "Empty since"} {new Date(s.timestamp).toLocaleTimeString()}
-                                            </text>
-                                        </g>
-                                    )
-                                })
-                                }
-                            </svg>                            
+                                    {/* Room fills + labels */}
+                                    {sensors.map((s) => {
+
+                                        const room_dim = dataByRoom[s.sensor]
+                                        if (!room_dim) {
+                                            console.warn("No matching room found for sensor id:", s.sensor);
+                                            return null;
+                                        }
+
+                                        const occupied = s.status === "Detected";
+                                        const cx = px(room_dim.x) + px(room_dim.w) / 2;
+                                        const cy = px(room_dim.y) + px(room_dim.h) / 2;
+
+                                        return (
+                                            <g key={s.sensor}>
+                                                <rect
+                                                    x={px(room_dim.x)}
+                                                    y={px(room_dim.y)}
+                                                    width={px(room_dim.w)}
+                                                    height={px(room_dim.h)}
+                                                    fill={occupied ? "#c3e88d" : room_dim.fillColor}
+                                                />
+                                                <text x={cx} y={cy - 16} textAnchor="middle" fontSize={13} fontWeight="700" fill="#333">
+                                                    {room_dim.room}
+                                                </text>
+                                                <text x={cx} y={cy + 18} textAnchor="middle" fontSize={10} fill="#333">
+                                                    {new Date(s.timestamp).toLocaleDateString()}
+                                                </text>
+                                                <text x={cx} y={cy + 32} textAnchor="middle" fontSize={10} fill="#333">
+                                                    {occupied ? "Occupied since" : "Empty since"} {new Date(s.timestamp).toLocaleTimeString()}
+                                                </text>
+                                            </g>
+                                        )
+                                    })}
+
+                                    {/* Interior walls (drawn as thick lines, skipping door gaps) */}
+                                    {rooms.map((room) => (
+                                        <rect
+                                            key={"wall-" + room.sensor}
+                                            x={px(room.x)}
+                                            y={px(room.y)}
+                                            width={px(room.w)}
+                                            height={px(room.h)}
+                                            fill="none"
+                                            stroke="#333"
+                                            strokeWidth={WALL}
+                                        />
+                                    ))}
+
+                                    {/* Door gaps: white-out the wall line + draw door leaf */}
+                                    {doors.map((d, i) => {
+                                        if (d.wall === 'v') {
+                                            const x = px(d.x);
+                                            const y1 = px(d.y1);
+                                            const y2 = px(d.y2);
+                                            return (
+                                                <g key={"door-" + i}>
+                                                    <line x1={x} y1={y1} x2={x} y2={y2} stroke="#fff" strokeWidth={WALL + 2} />
+                                                    <line x1={x} y1={y1} x2={x} y2={y2} stroke="#8a5a2b" strokeWidth={2} />
+                                                </g>
+                                            );
+                                        }
+                                        const x1 = px(d.x1);
+                                        const x2 = px(d.x2);
+                                        const y = px(d.y);
+                                        return (
+                                            <g key={"door-" + i}>
+                                                <line x1={x1} y1={y} x2={x2} y2={y} stroke="#fff" strokeWidth={WALL + 2} />
+                                                <line x1={x1} y1={y} x2={x2} y2={y} stroke="#8a5a2b" strokeWidth={2} />
+                                            </g>
+                                        );
+                                    })}
+
+                                    {/* Outer wall outline (thick, hatched) */}
+                                    <rect x={-WALL/2} y={-WALL/2} width={px(TOTAL_W) + WALL} height={px(TOTAL_H) + WALL}
+                                          fill="none" stroke="#222" strokeWidth={WALL + 2} />
+
+                                </g>
+
+                            </svg>
                         </div>
-                    : <div></div>}
+                    : <div>Retrieving Data...</div>}
                 </div> 
             )
 
