@@ -15,7 +15,7 @@ BROKER = "broker.hivemq.com"
 # PORT = 8883 1883
 PORT = 8883
 # TOPIC = "HP/CONSUMER_NO/+/+"
-TOPIC = "PRESENCE/LD2410/STATUS"
+TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
 
 # Latest data for React
 latest_sensor_data = {}
@@ -38,9 +38,9 @@ def on_message(client, userdata, msg):
     try:
 
         sensor_data = json.loads(msg.payload.decode())
-        print("sensor: ", sensor_data)
+        print(sensor_data)
 
-        sensor = sensor_data["sensor"]
+        sensor = sensor_data["sensor_room"]
 
         with data_lock:
 

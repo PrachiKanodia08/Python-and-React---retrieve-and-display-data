@@ -8,7 +8,7 @@ import paho.mqtt.client as mqtt
 BROKER = "broker.hivemq.com"
 PORT = 8883
 # BASE_TOPIC = "HP/CONSUMER_NO"
-TOPIC = "PRESENCE/LD2410/STATUS"
+TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
 
 # EVENTS = {
 #     "DETECTED": "Movement Detected",
@@ -22,7 +22,7 @@ client.tls_set()
 
 client.connect(BROKER, PORT)
 
-SENSOR_ROOM = "Toilet"
+SENSOR_ROOM = "Toilet-1"
 SENSOR_ID = "5"
 
 print("Publishing sensor data...")
@@ -56,14 +56,15 @@ while True:
         stationary_target_dist = 0
 
     payload = {
-        "sensor": SENSOR_ID,
-        # "sensor_room": SENSOR_ROOM,
+        #"sensor": SENSOR_ID,
+        "sensor_room": SENSOR_ROOM,
         "status": status,
-        "light":random.randint(1, 100),
+        #"light":random.randint(1, 100),
         "Moving Target": moving_target,
         "Moving Target Dist": moving_target_dist,
         "Stationary Target": stationary_target,
         "Stationary Target Dist": stationary_target_dist,
+        "Wifi": random.randint(0, 90),
         "timestamp": datetime.now().isoformat()
     }
 

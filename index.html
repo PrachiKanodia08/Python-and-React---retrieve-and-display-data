@@ -35,13 +35,14 @@
             const WALL = 4            // wall line thickness (px)
             const px = (ft) => ft * SCALE
             
-            
+            const [sensors, setSensors] = useState([])
+
             const [rooms, setRooms] = useState([
-                { sensor: "1", room: 'Living Room', x: 18, y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
-                { sensor: "2", room: 'Dining Room',  x: 10, y: 12, w: 20, h: 8,  fillColor: '#e8e4f5'},
-                { sensor: "3", room: 'Kitchen', x: 0,  y: 12, w: 10, h: 8,  fillColor: '#e8e4f5'},
-                { sensor: "4", room: 'Bed Room', x: 0,  y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
-                { sensor: "5", room: 'Toilet',  x: 12, y: 0,  w: 6,  h: 7,  fillColor: '#e8e4f5'},
+                { sensor_room: "LivingRoom", room: 'Living Room', x: 18, y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
+                { sensor_room: "DiningRoom", room: 'Dining Room',  x: 10, y: 12, w: 20, h: 8,  fillColor: '#e8e4f5'},
+                { sensor_room: "Kitchen", room: 'Kitchen', x: 0,  y: 12, w: 10, h: 8,  fillColor: '#e8e4f5'},
+                { sensor_room: "BedRoom", room: 'Bed Room', x: 0,  y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
+                { sensor_room: "Toilet-1", room: 'Toilet 1',  x: 12, y: 0,  w: 6,  h: 7,  fillColor: '#e8e4f5'},
             ])
 
             // Door openings: wall segment to leave blank + swing arc.
@@ -59,12 +60,14 @@
                 { wall: 'v', x: 18, y1: 8, y2: 11, hinge: 'top' }, // corridor -> Living Room
             ]
 
-            const dataByRoom = Object.fromEntries(rooms.map((r) => [r.sensor, r]))
+            const dataByRoom = Object.fromEntries(rooms.map((r) => [r.sensor_room, r]))
+
+            console.log("sensors: ", sensors)
 
             useEffect(() => {
                 
                 const timer = setInterval(() => {
-                    fetch("http://192.168.1.21:5000/api/sensors")
+                    fetch("http://192.168.1.14:5000/api/sensors")
                     .then(res => res.json())
                     .then(json => setSensors(json.data))
                 }, 3000)
@@ -88,9 +91,9 @@
                                     {/* Room fills + labels */}
                                     {sensors.map((s) => {
 
-                                        const room_dim = dataByRoom[s.sensor]
+                                        const room_dim = dataByRoom[s.sensor_room]
                                         if (!room_dim) {
-                                            console.warn("No matching room found for sensor id:", s.sensor);
+                                            console.warn("No matching room found for sensor id:", s.sensor_room);
                                             return null;
                                         }
 
@@ -99,7 +102,7 @@
                                         const cy = px(room_dim.y) + px(room_dim.h) / 2;
 
                                         return (
-                                            <g key={s.sensor}>
+                                            <g key={s.sensor_room}>
                                                 <rect
                                                     x={px(room_dim.x)}
                                                     y={px(room_dim.y)}
@@ -123,7 +126,7 @@
                                     {/* Interior walls (drawn as thick lines, skipping door gaps) */}
                                     {rooms.map((room) => (
                                         <rect
-                                            key={"wall-" + room.sensor}
+                                            key={"wall-" + room.sensor_room}
                                             x={px(room.x)}
                                             y={px(room.y)}
                                             width={px(room.w)}
