@@ -1,14 +1,13 @@
 import json
 import random
 import time
-from datetime import datetime
 
 import paho.mqtt.client as mqtt
 
 BROKER = "broker.hivemq.com"
 PORT = 8883
 # BASE_TOPIC = "HP/CONSUMER_NO"
-TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
+TOPIC = "PRESENCE/LD2410/STATUS"
 
 # EVENTS = {
 #     "DETECTED": "Movement Detected",
@@ -64,8 +63,7 @@ while True:
         "Moving Target Dist": moving_target_dist,
         "Stationary Target": stationary_target,
         "Stationary Target Dist": stationary_target_dist,
-        "Wifi": random.randint(0, 90),
-        "timestamp": datetime.now().isoformat()
+        "Wifi": random.randint(0, 90)
     }
 
     client.publish(TOPIC, json.dumps(payload))
