@@ -9,16 +9,12 @@ import random
 app = Flask(__name__)
 CORS(app)
 
-# HP/APT_NAME/HOUSE_NO/Sensor1/MOVED_AWAY -> Object Moved Away
-# HP/APT_NAME/HOUSE_NO/Sensor1/DETECTED -> Movement Detected
-# HP/APT_NAME/HOUSE_NO/Sensor1/ROOM EMPTY -> Room Empty
 
 BROKER = "broker.hivemq.com"
 # PORT = 8883 1883
 PORT = 8883
-# TOPIC = "HP/CONSUMER_NO/+/+"
-TOPIC = "PRESENCE/LD2410/STATUS"
-#TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
+#TOPIC = "PRESENCE/LD2410/STATUS"
+TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
 
 # Latest data for React
 latest_sensor_data = {}
@@ -54,6 +50,7 @@ def on_message(client, userdata, msg):
     except Exception as e:
 
         print(e)
+
 
 
 mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
