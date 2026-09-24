@@ -9,12 +9,6 @@ PORT = 8883
 #BASE_TOPIC = "HP/CONSUMER_NO"
 TOPIC = "PRESENCE/LD2410/STATUS"
 
-# EVENTS = {
-#     "DETECTED": "Movement Detected",     #  -> 1 (green) #b5e550
-#     "MOVED_AWAY": "Object Moved Away",   #  -> 1 -> 0 (light green)
-#     "ROOM EMPTY": "Room Empty"           # -> 0  (light blue/ grey) last 1 min
-#     # "SENSOR_KEEP_ALIVE": "Yes"  -> No: off /not working, after every 1 hr
-# }
 
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
@@ -29,21 +23,15 @@ print("Publishing sensor data...")
 
 while True:
 
-    #event_key = random.choice(list(EVENTS.keys()))
-
-    #TOPIC = f"{BASE_TOPIC}/{SENSOR_ROOM}/{event_key}"
-
     #Randomly choose which type of payload to generate
-    payload_type = random.choice(["status", "keep_alive"])
+    status = random.choice(["OFF_LINE", "ON_LINE", "KEEP_ALIVE", "DETECTED", "NOT_DETECTED"])
 
-    # OPTION 1: SENSOR STATUS PAYLOAD
+    # OPTION 1: SENSOR DETECETED/NOT_DETECTED PAYLOAD
     #-----------------------------------
 
-    if payload_type == "status":
+    if ((status == "DETECTED") or (status == "NOT_DETECTED")):
 
-        status = random.choice(["Detected", "Not Detected"])
-
-        if status == "Detected":
+        if status == "DETECTED":
 
             moving_target = random.choice([True, False])
             stationary_target = random.choice([True, False])
@@ -70,18 +58,31 @@ while True:
             "Moving Target Dist": moving_target_dist,
             "Stationary Target": stationary_target,
             "Stationary Target Dist": stationary_target_dist,
-            "Wifi": random.randint(0, 90)
+            "Wifi": random.randint(1, 90)
         }
 
-    # OPTION 2: KEEP ALIVE PAYLOAD
+    # OPTION 2: KEEP_ALIVE/ON_LINE PAYLOAD
     # -----------------------------------
 
     else:
 
-        payload = {
-            "Message": f"{SENSOR_ROOM} Keep Alive",
-            "Wifi": str(random.randint(0, 90))
-        }
+        if ((status == "KEEP_ALIVE") or (status == "ON_LINE")):
+
+            payload = {
+                "sensor_room": SENSOR_ROOM,
+                "status": status,
+                "Wifi": str(random.randint(1, 90))
+            }
+
+    # OPTION 3: OFF_LINE PAYLOAD
+    # -----------------------------------
+
+        else:
+            payload = {
+                "sensor_room": SENSOR_ROOM,
+                "status": status
+            }
+
 
     client.publish(TOPIC, json.dumps(payload))
     print(payload)

@@ -26,6 +26,7 @@
 
         const { useState, useEffect } = React;
 
+
         function App() {
 
             const SCALE = 22         // pixels per foot
@@ -36,6 +37,15 @@
             const px = (ft) => ft * SCALE
             
             const [sensors, setSensors] = useState([])
+
+            // const [sensors, setSensors] = useState([
+            //     {"sensor_room":"BedRoom","sensor_status":"OFF_LINE","timestamp":"2026-09-24T21:45:39.457478"},
+            //     {"Moving Target":false,"Moving Target Dist":0,"Stationary Target":false,"Stationary Target Dist":0,"Wifi":46,"sensor_room":"DiningRoom","sensor_status":"ON_LINE","status":"NOT_DETECTED","timestamp":"2026-09-24T21:45:34.747789"},
+            //     {"Moving Target":false,"Moving Target Dist":0,"Stationary Target":false,"Stationary Target Dist":0,"Wifi":6,"sensor_room":"Kitchen","sensor_status":"OFF_LINE","status":"NOT_DETECTED","timestamp":"2026-09-24T21:45:36.921164"},
+            //     {"Moving Target":false,"Moving Target Dist":0,"Stationary Target":true,"Stationary Target Dist":18,"Wifi":49,"sensor_room":"LivingRoom","sensor_status":"OFF_LINE","status":"DETECTED","timestamp":"2026-09-24T21:45:35.949020"},
+            //     {"Moving Target":true,"Moving Target Dist":20,"Stationary Target":false,"Stationary Target Dist":0,"Wifi":76,"sensor_room":"Toilet-1","sensor_status":"OFF_LINE","status":"DETECTED","timestamp":"2026-09-24T21:45:41.282824"}
+            // ])
+
 
             const [rooms, setRooms] = useState([
                 { sensor_room: "LivingRoom", room: 'Living Room', x: 18, y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
@@ -97,7 +107,8 @@
                                             return null;
                                         }
 
-                                        const occupied = s.status === "DETECETED";
+                                        const occupied = s.status === "DETECTED";
+                                        console.log("occupied : ",occupied)
                                         const cx = px(room_dim.x) + px(room_dim.w) / 2;
                                         const cy = px(room_dim.y) + px(room_dim.h) / 2;
 
@@ -110,6 +121,7 @@
                                                     height={px(room_dim.h)}
                                                     fill={occupied ? "#c3e88d" : room_dim.fillColor}
                                                 />
+
                                                 <text x={cx} y={cy - 16} textAnchor="middle" fontSize={13} fontWeight="700" fill="#333">
                                                     {room_dim.room}
                                                 </text>
@@ -168,6 +180,7 @@
                                 </g>
 
                             </svg>
+
                         </div>
                     : <div>Retrieving Data...</div>}
                 </div> 
