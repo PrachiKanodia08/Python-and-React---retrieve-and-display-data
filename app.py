@@ -13,8 +13,8 @@ CORS(app)
 BROKER = "broker.hivemq.com"
 # PORT = 8883 1883
 PORT = 8883
-#TOPIC = "PRESENCE/LD2410/STATUS"
-TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
+TOPIC = "PRESENCE/LD2410/STATUS"
+#TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
 
 # Latest data for React
 latest_sensor_data = {}
@@ -131,7 +131,7 @@ def on_message(client, userdata, msg):
 
 
                 # Update timestamp
-                existing_sensor_data["timestamp"] = timestamp
+                #existing_sensor_data["timestamp"] = timestamp
 
 
                 # Save the merged data
