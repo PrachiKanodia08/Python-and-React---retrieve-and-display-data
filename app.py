@@ -124,6 +124,7 @@ def on_message(client, userdata, msg):
                 if not existing_sensor_data:
 
                     existing_sensor_data["sensor_room"] = sensor
+                    existing_sensor_data["timestamp"] = timestamp
 
 
                 # Add / update sensor_status
