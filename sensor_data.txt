@@ -2064,3 +2064,71 @@
 {"sensor": "3", "status": "Detected", "light": 23, "Moving Target": true, "Moving Target Dist": 21, "Stationary Target": true, "Stationary Target Dist": 2, "timestamp": "2026-09-10T11:50:33.351757"}
 {"sensor": "4", "status": "Not Detected", "light": 3, "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "timestamp": "2026-09-10T11:50:35.027230"}
 {"sensor": "5", "status": "Not Detected", "light": 69, "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "timestamp": "2026-09-10T11:50:37.020793"}
+{"sensor_room": "LivingRoom", "status": "OFF_LINE"}
+{"sensor_room": "LivingRoom", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": -1, "Stationary Target": false, "Stationary Target Dist": -1, "Wifi": -67}
+{"sensor_room": "Kitchen", "status": "KEEP_ALIVE", "Wifi": "-72"}
+{"sensor_room": "LivingRoom", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 153, "Stationary Target": true, "Stationary Target Dist": 138, "Wifi": -70}
+{"sensor_room": "BedRoom", "status": "KEEP_ALIVE", "Wifi": "-62"}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "-64"}
+{"sensor_room": "DiningRoom", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 30, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 57}
+{"sensor_room": "Toilet-1", "status": "OFF_LINE"}
+{"sensor_room": "Kitchen", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 49}
+{"sensor_room": "LivingRoom", "status": "DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": true, "Stationary Target Dist": 8, "Wifi": 9}
+{"sensor_room": "BedRoom", "status": "DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": true, "Stationary Target Dist": 8, "Wifi": 30}
+{"sensor_room": "DiningRoom", "status": "KEEP_ALIVE", "Wifi": "16"}
+{"sensor_room": "Toilet-1", "status": "ON_LINE", "Wifi": "59"}
+{"sensor_room": "Kitchen", "status": "KEEP_ALIVE", "Wifi": "82"}
+{"sensor_room": "LivingRoom", "status": "ON_LINE", "Wifi": "71"}
+{"sensor_room": "BedRoom", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 19}
+{"sensor_room": "DiningRoom", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 2, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 9}
+{"sensor_room": "Toilet-1", "status": "ON_LINE", "Wifi": "18"}
+{"sensor_room": "Kitchen", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 10}
+{"sensor_room": "LivingRoom", "status": "ON_LINE", "Wifi": "13"}
+{"sensor_room": "BedRoom", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 16, "Stationary Target": true, "Stationary Target Dist": 9, "Wifi": 11}
+{"sensor_room": "DiningRoom", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 21, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 7}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "25"}
+{"sensor_room": "Kitchen", "status": "DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": true, "Stationary Target Dist": 2, "Wifi": 19}
+{"sensor_room": "LivingRoom", "status": "ON_LINE", "Wifi": "71"}
+{"sensor_room": "BedRoom", "status": "OFF_LINE"}
+{"sensor_room": "DiningRoom", "status": "KEEP_ALIVE", "Wifi": "31"}
+{"sensor_room": "Toilet-1", "status": "OFF_LINE"}
+{"sensor_room": "Kitchen", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 10, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 47}
+{"sensor_room": "LivingRoom", "status": "ON_LINE", "Wifi": "20"}
+{"sensor_room": "BedRoom", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 11, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 70}
+{"sensor_room": "DiningRoom", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 66}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "5"}
+{"sensor_room": "Kitchen", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 26, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 68}
+{"sensor_room": "LivingRoom", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 25}
+{"sensor_room": "BedRoom", "status": "KEEP_ALIVE", "Wifi": "49"}
+{"sensor_room": "DiningRoom", "status": "KEEP_ALIVE", "Wifi": "58"}
+{"sensor_room": "Toilet-1", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 30, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 53}
+{"sensor_room": "Kitchen", "status": "KEEP_ALIVE", "Wifi": "72"}
+{"sensor_room": "LivingRoom", "status": "KEEP_ALIVE", "Wifi": "61"}
+{"sensor_room": "BedRoom", "status": "KEEP_ALIVE", "Wifi": "86"}
+{"sensor_room": "DiningRoom", "status": "ON_LINE", "Wifi": "26"}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "32"}
+{"sensor_room": "Kitchen", "status": "KEEP_ALIVE", "Wifi": "8"}
+{"sensor_room": "LivingRoom", "status": "KEEP_ALIVE", "Wifi": "12"}
+{"sensor_room": "BedRoom", "status": "OFF_LINE"}
+{"sensor_room": "DiningRoom", "status": "OFF_LINE"}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "14"}
+{"sensor_room": "Kitchen", "status": "ON_LINE", "Wifi": "57"}
+{"sensor_room": "LivingRoom", "status": "KEEP_ALIVE", "Wifi": "22"}
+{"sensor_room": "BedRoom", "status": "ON_LINE", "Wifi": "67"}
+{"sensor_room": "DiningRoom", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 42}
+{"sensor_room": "Toilet-1", "status": "DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": true, "Stationary Target Dist": 11, "Wifi": 66}
+{"sensor_room": "Kitchen", "status": "ON_LINE", "Wifi": "21"}
+{"sensor_room": "LivingRoom", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 68}
+{"sensor_room": "BedRoom", "status": "KEEP_ALIVE", "Wifi": "37"}
+{"sensor_room": "DiningRoom", "status": "OFF_LINE"}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "77"}
+{"sensor_room": "Kitchen", "status": "ON_LINE", "Wifi": "10"}
+{"sensor_room": "LivingRoom", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 48}
+{"sensor_room": "BedRoom", "status": "DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": true, "Stationary Target Dist": 1, "Wifi": 22}
+{"sensor_room": "DiningRoom", "status": "DETECTED", "Moving Target": true, "Moving Target Dist": 27, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 44}
+{"sensor_room": "Toilet-1", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 27}
+{"sensor_room": "Kitchen", "status": "KEEP_ALIVE", "Wifi": "61"}
+{"sensor_room": "LivingRoom", "status": "KEEP_ALIVE", "Wifi": "31"}
+{"sensor_room": "BedRoom", "status": "KEEP_ALIVE", "Wifi": "79"}
+{"sensor_room": "DiningRoom", "status": "NOT_DETECTED", "Moving Target": false, "Moving Target Dist": 0, "Stationary Target": false, "Stationary Target Dist": 0, "Wifi": 67}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "16"}

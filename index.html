@@ -2,14 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>React on Tomcat Without NPM</title>
-    
-    
+
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden; /* prevent accidental horizontal scroll on mobile */
+        }
+    </style>
+
     <!-- Load React and ReactDOM Core Libraries via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    
 
     <!-- Load Babel to compile JSX dynamically in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -85,23 +93,14 @@
 
         function App() {
 
-            const SCALE = 22         // pixels per foot
+            const SCALE = 22         // pixels per foot (used only to build the viewBox coordinate space)
             const TOTAL_W = 30        // ft
             const TOTAL_H = 20        // ft
             const PAD = 60            // space for dimension lines/labels
             const WALL = 4            // wall line thickness (px)
             const px = (ft) => ft * SCALE
-            
+
             const [sensors, setSensors] = useState([])
-
-            // const [sensors, setSensors] = useState([
-            //     {"sensor_room":"BedRoom","sensor_status":"OFF_LINE", "timestamp":"2026-09-24T21:45:39.457478"},
-            //     {"Moving Target":false,"Moving Target Dist":0,"Stationary Target":false,"Stationary Target Dist":0,"Wifi":46,"sensor_room":"DiningRoom","sensor_status":"ON_LINE","status":"NOT_DETECTED","timestamp":"2026-09-24T21:45:34.747789"},
-            //     {"Moving Target":false,"Moving Target Dist":0,"Stationary Target":false,"Stationary Target Dist":0,"Wifi":6,"sensor_room":"Kitchen","sensor_status":"OFF_LINE","status":"NOT_DETECTED","timestamp":"2026-09-24T21:45:36.921164"},
-            //     {"Moving Target":false,"Moving Target Dist":0,"Stationary Target":true,"Stationary Target Dist":18,"Wifi":49,"sensor_room":"LivingRoom","sensor_status":"KEEP_ALIVE","status":"DETECTED","timestamp":"2026-09-24T21:45:35.949020"},
-            //     {"Moving Target":true,"Moving Target Dist":20,"Stationary Target":false,"Stationary Target Dist":0,"Wifi":76,"sensor_room":"Toilet-1","sensor_status":"OFF_LINE","status":"DETECTED","timestamp":"2026-09-24T21:45:41.282824"}
-            // ])
-
 
             const [rooms, setRooms] = useState([
                 { sensor_room: "LivingRoom", room: 'Living Room', x: 18, y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
@@ -132,7 +131,7 @@
 
 
             useEffect(() => {
-                
+
                 const timer = setInterval(() => {
                     fetch("http://192.168.1.14:5000/api/sensors")
                     .then(res => res.json())
@@ -143,14 +142,20 @@
 
             }, []);
 
+            // Full pixel size of the drawing in its own coordinate space.
+            // This is used for the viewBox only -- NOT as the rendered on-screen size.
+            const svgFullWidth = px(TOTAL_W) + PAD * 2;
+            const svgFullHeight = px(TOTAL_H) + PAD * 2;
+
             return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Arial, sans-serif', paddingTop: '16px' }}>
-                    <h2 style={{ marginBottom: '4px' }}>Sensor Data</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Arial, sans-serif', paddingTop: '16px', width: '100%' }}>
+                    <h2 style={{ marginBottom: '4px', fontSize: 'clamp(16px, 4vw, 22px)', textAlign: 'center', padding: '0 12px' }}>Sensor Data</h2>
                     {sensors.length > 0 ?
-                        <div style={{ background: '#fff', padding: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
+                        <div style={{ background: '#fff', padding: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', width: '100%', maxWidth: svgFullWidth + 'px', boxSizing: 'border-box' }}>
                             <svg
-                                width={px(TOTAL_W) + PAD * 2}
-                                height={px(TOTAL_H) + PAD * 2}
+                                viewBox={`0 0 ${svgFullWidth} ${svgFullHeight}`}
+                                preserveAspectRatio="xMidYMid meet"
+                                style={{ width: '100%', height: 'auto', display: 'block' }}
                             >
 
                                 <g transform={`translate(${PAD}, ${PAD})`}>
@@ -165,7 +170,7 @@
                                         }
 
                                         const occupied = s.status === "DETECTED";
-                                        
+
                                         const cx = px(room_dim.x) + px(room_dim.w) / 2;
                                         const cy = px(room_dim.y) + px(room_dim.h) / 2;
 
@@ -247,7 +252,7 @@
 
                         </div>
                     : <div>Retrieving Data...</div>}
-                </div> 
+                </div>
             )
 
         }
