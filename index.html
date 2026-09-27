@@ -133,7 +133,7 @@
             useEffect(() => {
 
                 const timer = setInterval(() => {
-                    fetch("http://192.168.1.14:5000/api/sensors")
+                    fetch("http://3.7.179.252:5000/api/sensors")
                     .then(res => res.json())
                     .then(json => setSensors(json.data))
                 }, 5000)
