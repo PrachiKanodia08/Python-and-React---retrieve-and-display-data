@@ -1,0 +1,30 @@
+{"sensor_room": "LivingRoom", "status": "KEEP_ALIVE", "Wifi": "19", "timestamp": "2026-09-27T22:45:58.097820"}
+{"sensor_room": "DiningRoom", "status": "OFF_LINE", "timestamp": "2026-09-27T22:46:01.335781"}
+{"sensor_room": "Toilet-1", "status": "OFF_LINE", "timestamp": "2026-09-27T22:46:02.233715"}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "65", "timestamp": "2026-09-27T22:46:12.090720"}
+{"sensor_room": "Toilet-1", "status": "OFF_LINE", "timestamp": "2026-09-27T22:46:22.198775"}
+{"sensor_room": "Kitchen", "status": "ON_LINE", "Wifi": "40", "timestamp": "2026-09-27T22:46:24.699745"}
+{"sensor_room": "LivingRoom", "status": "OFF_LINE", "timestamp": "2026-09-27T22:46:28.891715"}
+{"sensor_room": "BedRoom", "status": "OFF_LINE", "timestamp": "2026-09-27T22:46:29.013998"}
+{"sensor_room": "Toilet-1", "status": "ON_LINE", "Wifi": "35", "timestamp": "2026-09-27T22:46:32.194179"}
+{"sensor_room": "BedRoom", "status": "OFF_LINE", "timestamp": "2026-09-27T22:46:39.430198"}
+{"sensor_room": "Kitchen", "status": "ON_LINE", "Wifi": "6", "timestamp": "2026-09-27T22:46:46.027961"}
+{"sensor_room": "BedRoom", "status": "KEEP_ALIVE", "Wifi": "89", "timestamp": "2026-09-27T22:46:48.567161"}
+{"sensor_room": "DiningRoom", "status": "ON_LINE", "Wifi": "10", "timestamp": "2026-09-27T22:46:51.704114"}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "75", "timestamp": "2026-09-27T22:46:52.581574"}
+{"sensor_room": "LivingRoom", "status": "OFF_LINE", "timestamp": "2026-09-27T22:46:58.564259"}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "33", "timestamp": "2026-09-27T22:47:02.307630"}
+{"sensor_room": "BedRoom", "status": "KEEP_ALIVE", "Wifi": "53", "timestamp": "2026-09-27T22:47:08.429174"}
+{"sensor_room": "LivingRoom", "status": "ON_LINE", "Wifi": "19", "timestamp": "2026-09-27T22:47:08.578092"}
+{"sensor_room": "DiningRoom", "status": "KEEP_ALIVE", "Wifi": "41", "timestamp": "2026-09-27T22:47:12.160590"}
+{"sensor_room": "Toilet-1", "status": "KEEP_ALIVE", "Wifi": "58", "timestamp": "2026-09-27T22:47:12.366533"}
+{"sensor_room": "Kitchen", "status": "KEEP_ALIVE", "Wifi": "65", "timestamp": "2026-09-27T22:47:14.465992"}
+{"sensor_room": "BedRoom", "status": "KEEP_ALIVE", "Wifi": "83", "timestamp": "2026-09-27T22:47:19.069077"}
+{"sensor_room": "BedRoom", "status": "ON_LINE", "Wifi": "79", "timestamp": "2026-09-27T22:47:28.586904"}
+{"sensor_room": "DiningRoom", "status": "KEEP_ALIVE", "Wifi": "89", "timestamp": "2026-09-27T22:47:32.051435"}
+{"sensor_room": "LivingRoom", "status": "OFF_LINE", "timestamp": "2026-09-27T22:47:37.871110"}
+{"sensor_room": "DiningRoom", "status": "KEEP_ALIVE", "Wifi": "57", "timestamp": "2026-09-27T22:47:41.330334"}
+{"sensor_room": "Toilet-1", "status": "OFF_LINE", "timestamp": "2026-09-27T22:47:42.361339"}
+{"sensor_room": "BedRoom", "status": "ON_LINE", "Wifi": "79", "timestamp": "2026-09-27T22:47:48.658934"}
+{"sensor_room": "DiningRoom", "status": "KEEP_ALIVE", "Wifi": "76", "timestamp": "2026-09-27T22:47:51.735078"}
+{"sensor_room": "DiningRoom", "status": "ON_LINE", "Wifi": "56", "timestamp": "2026-09-27T22:52:33.020969"}
