@@ -13,8 +13,8 @@ CORS(app)
 BROKER = "broker.hivemq.com"
 # PORT = 8883 1883
 PORT = 8883
-#TOPIC = "PRESENCE/LD2410/STATUS"
-TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
+TOPIC = "PRESENCE/LD2410/STATUS"
+#TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
 
 # Latest data for React
 latest_sensor_data = {}
@@ -58,7 +58,7 @@ def on_message(client, userdata, msg):
         # -------------------------------------------------
 
         incoming_status = sensor_data.get("status", "").strip().upper()
-        print("incoming_status : ", incoming_status)
+        #print("incoming_status : ", incoming_status)
 
 
         # -------------------------------------------------
@@ -94,8 +94,17 @@ def on_message(client, userdata, msg):
                     )
 
 
-                # Update timestamp
-                updated_sensor_data["timestamp"] = timestamp
+                if "status" in existing_sensor_data:
+
+                    # only if status changes, 
+                    if (existing_sensor_data["status"] != updated_sensor_data["status"]):
+                        # Update timestamp
+                        updated_sensor_data["timestamp"] = timestamp
+                    else:
+                        updated_sensor_data["timestamp"] = existing_sensor_data["timestamp"]
+
+                else:
+                    updated_sensor_data["timestamp"] = timestamp
 
 
                 # Save updated sensor data
@@ -153,7 +162,6 @@ def on_message(client, userdata, msg):
     except Exception as e:
 
         print("Error processing MQTT message:", e)
-
 
 
 mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
