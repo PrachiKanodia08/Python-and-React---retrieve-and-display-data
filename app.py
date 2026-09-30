@@ -13,14 +13,34 @@ CORS(app)
 BROKER = "broker.hivemq.com"
 # PORT = 8883 1883
 PORT = 8883
-TOPIC = "PRESENCE/LD2410/STATUS"
-#TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
+#TOPIC = "PRESENCE/LD2410/STATUS"
+TOPIC = "PRESENCE/BLR/MANSARVOVAR/A4562/STATUS"
+
+DETECTION_STATUSES = ["DETECTED", "NOT_DETECTED"]
+CONNECTIVITY_STATUSES = ["OFF_LINE", "ON_LINE", "KEEP_ALIVE"]
+MAX_MESSAGES = 200
 
 # Latest data for React
 latest_sensor_data = {}
 
+messages = []
+next_message_id = 1
+
 # Thread synchronization
 data_lock = threading.Lock()
+
+
+def add_message(text):
+    """Append a chat message. Do NOT call while already holding data_lock."""
+    global next_message_id
+    with data_lock:
+        messages.append({
+            "id": next_message_id,
+            "text": text,
+            "timestamp": datetime.now().isoformat(),
+        })
+        next_message_id += 1
+        del messages[:-MAX_MESSAGES]  # keep only the newest MAX_MESSAGES
 
 
 def on_connect(client, userdata, flags, reason_code, properties=None):
@@ -28,6 +48,8 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
     print("Flask MQTT Connected")
 
     client.subscribe(TOPIC)
+
+    add_message("Connected to MQTT broker")
 
 
 def on_message(client, userdata, msg):
@@ -159,6 +181,9 @@ def on_message(client, userdata, msg):
                 f"{incoming_status}"
             )
 
+        # Lock is released here, so add_message can take it safely.
+        add_message(f"{sensor}: {incoming_status}")
+
     except Exception as e:
 
         print("Error processing MQTT message:", e)
@@ -188,6 +213,15 @@ def sensors():
             "totalSensors": len(latest_sensor_data),
             "data": list(latest_sensor_data.values())
 
+        })
+
+
+@app.route("/api/messages")
+def get_messages():
+    with data_lock:
+        return jsonify({
+            "status": "success",
+            "data": list(messages),
         })
 
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>React on Tomcat Without NPM</title>
+    <title>Gentle Steps</title>
 
     <style>
         * { box-sizing: border-box; }
@@ -11,55 +11,104 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            overflow-x: hidden; /* prevent accidental horizontal scroll on mobile */
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        /* ---------- NEW: two-column page layout ---------- */
+        .layout {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100vh;              /* full-height so the chat panel can scroll on its own */
+            font-family: Arial, sans-serif;
+        }
+        .main-pane {
+            flex: 1 1 auto;             /* takes all remaining width */
+            min-width: 0;               /* lets the SVG shrink instead of overflowing */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 16px;
+        }
+        .chat-pane {
+            flex: 0 0 340px;            /* fixed-width right column */
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #ddd;
+            background: #f7f7f9;
+            height: 100%;
+        }
+        .chat-header {
+            padding: 14px 16px;
+            font-weight: 700;
+            border-bottom: 1px solid #ddd;
+            background: #fff;
+        }
+        .chat-list {
+            flex: 1 1 auto;
+            overflow-y: auto;           /* <-- the scrollable message area */
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chat-empty { color: #888; text-align: center; margin-top: 24px; font-size: 14px; }
+        .msg {
+            align-self: flex-start;
+            max-width: 90%;
+            background: #fff;
+            border: 1px solid #e2e2e8;
+            border-radius: 12px 12px 12px 2px;
+            padding: 8px 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .msg-time { display: block; margin-top: 4px; font-size: 11px; color: #888; }
+
+        /* On phones, stack: sensor map on top, chat below */
+        @media (max-width: 800px) {
+            .layout { flex-direction: column; height: auto; min-height: 100vh; }
+            .main-pane { overflow-y: visible; }
+            .chat-pane { flex: none; height: 320px; border-left: none; border-top: 1px solid #ddd; }
         }
     </style>
 
-    <!-- Load React and ReactDOM Core Libraries via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-
-    <!-- Load Babel to compile JSX dynamically in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
 </head>
 <body>
 
-    <!-- Target container where React will render the UI -->
     <div id="root"></div>
 
-    <!-- Note the type="text/babel" - this triggers Babel execution -->
     <script type="text/babel" data-type="module">
-        // Define a simple functional component
+        const { useState, useEffect, useRef } = React;
 
-        const { useState, useEffect } = React;
+        const API_BASE = "http://192.168.1.14:5000"
+        // const API_BASE = "http://3.7.179.252:5000"
 
+        console.log("index.html v2 (with chat panel) loaded");
 
         function SensorStatusIcon({ sensor_status, x, y }) {
             const normalizedStatus = (sensor_status || "")
 
-            // KEEP_ALIVE -> small green circle
             if (normalizedStatus === "KEEP_ALIVE") {
                 return (
                     <g transform={`translate(${x}, ${y})`}>
-                        {/* 1. Invisible Bounding Box covering the entire 24x24 icon area */}
                         <rect width="24" height="24" fill="transparent" pointerEvents="all" />
-
-                        {/* 2. Tooltip Title */}
                         <title>Status: Working</title>
                         <circle cx="6" cy="6" r="7" fill="#22c55e" />
                     </g>
                 );
             }
 
-            // ON_LINE / ONLINE -> green Wi-Fi icon
             if (normalizedStatus === "ON_LINE" || normalizedStatus === "ONLINE") {
                 return (
                     <g transform={`translate(${x}, ${y})`} fill="none">
-                        {/* 1. Invisible Bounding Box covering the entire 24x24 icon area */}
                         <rect width="24" height="24" fill="transparent" pointerEvents="all" />
-
-                        {/* 2. Tooltip Title */}
                         <title>Status: Online</title>
                         <path d="M2 8.5C7.5 3.5 16.5 3.5 22 8.5" stroke="#22c55e" strokeWidth="1.8" strokeLinecap="round" />
                         <path d="M5.5 12C9.2 8.8 14.8 8.8 18.5 12" stroke="#22c55e" strokeWidth="1.8" strokeLinecap="round" />
@@ -69,14 +118,10 @@
                 );
             }
 
-            // OFF_LINE / OFFLINE -> red Wi-Fi icon with slash
             if (normalizedStatus === "OFF_LINE" || normalizedStatus === "OFFLINE") {
                 return (
                     <g transform={`translate(${x}, ${y})`} fill="none">
-                        {/* 1. Invisible Bounding Box covering the entire 24x24 icon area */}
                         <rect width="24" height="24" fill="transparent" pointerEvents="all" />
-
-                        {/* 2. Tooltip Title */}
                         <title>Status: Offline</title>
                         <path d="M2 8.5C7.5 3.5 16.5 3.5 22 8.5" stroke="#ef4444" strokeWidth="1.8" strokeLinecap="round" />
                         <path d="M5.5 12C9.2 8.8 14.8 8.8 18.5 12" stroke="#ef4444" strokeWidth="1.8" strokeLinecap="round" />
@@ -90,17 +135,54 @@
             return null;
         }
 
+        /* ---------- NEW: chat panel component ---------- */
+        function ChatPanel({ messages, error }) {
+            const listRef = useRef(null);
+            const stickToBottom = useRef(true);
+
+            // Track whether the user is near the bottom; if they scrolled up to read
+            // older messages, we don't yank them back down when new ones arrive.
+            const onScroll = () => {
+                const el = listRef.current;
+                stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+            };
+
+            useEffect(() => {
+                const el = listRef.current;
+                if (el && stickToBottom.current) el.scrollTop = el.scrollHeight;
+            }, [messages]);
+
+            return (
+                <div className="chat-pane">
+                    <div className="chat-header">Messages</div>
+                    <div className="chat-list" ref={listRef} onScroll={onScroll}>
+                        {error && <div className="chat-empty" style={{ color: '#b91c1c' }}>{error}</div>}
+                        {!error && messages.length === 0 && <div className="chat-empty">No messages yet</div>}
+                        {messages.map((m, i) => (
+                            <div className="msg" key={m.id ?? i}>
+                                {m.text}
+                                {m.timestamp && (
+                                    <span className="msg-time">{new Date(m.timestamp).toLocaleString()}</span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
 
         function App() {
 
-            const SCALE = 22         // pixels per foot (used only to build the viewBox coordinate space)
-            const TOTAL_W = 30        // ft
-            const TOTAL_H = 20        // ft
-            const PAD = 60            // space for dimension lines/labels
-            const WALL = 4            // wall line thickness (px)
+            const SCALE = 22
+            const TOTAL_W = 30
+            const TOTAL_H = 20
+            const PAD = 60
+            const WALL = 4
             const px = (ft) => ft * SCALE
 
             const [sensors, setSensors] = useState([])
+            const [messages, setMessages] = useState([])   // NEW
+            const [msgError, setMsgError] = useState(null)   // NEW
 
             const [rooms, setRooms] = useState([
                 { sensor_room: "LivingRoom", room: 'Living Room', x: 18, y: 0,  w: 12, h: 12, fillColor: '#e8e4f5'},
@@ -110,154 +192,165 @@
                 { sensor_room: "Toilet-1", room: 'Toilet 1',  x: 12, y: 0,  w: 6,  h: 7,  fillColor: '#e8e4f5'},
             ])
 
-            // Door openings: wall segment to leave blank + swing arc.
-            // wall: 'h' = gap cut into a horizontal wall line, 'v' = vertical wall line.
             const doors = [
-                { wall: 'v', x: 12, y1: 3,  y2: 6,  hinge: 'top' }, // Bedroom <-> Toilet
-                { wall: 'h', x1: 12, x2: 15, y: 12,  hinge: 'left'  }, // Bed Room <-> Dining (lower)
-                { wall: 'v', x: 18, y1: 3,  y2: 6,  hinge: 'top' }, // Toilet <-> Living Room
-                { wall: 'h', x1: 22, x2: 25, y: 12,  hinge: 'left'   }, // Living Room <-> Dining
-                { wall: 'v', x: 10, y1: 14, y2: 17, hinge: 'top' }, // Kitchen <-> Dining
-                { wall: 'h', x1: 2,  x2: 5,  y: 0,   hinge: 'left' }, // front door (Bed Room wall)
-
-                // NEW: passway between Bedroom and Living Room via the corridor below the Toilet
-                { wall: 'v', x: 12, y1: 8, y2: 11, hinge: 'top' }, // Bedroom -> corridor
-                { wall: 'v', x: 18, y1: 8, y2: 11, hinge: 'top' }, // corridor -> Living Room
+                { wall: 'v', x: 12, y1: 3,  y2: 6,  hinge: 'top' },
+                { wall: 'h', x1: 12, x2: 15, y: 12,  hinge: 'left'  },
+                { wall: 'v', x: 18, y1: 3,  y2: 6,  hinge: 'top' },
+                { wall: 'h', x1: 22, x2: 25, y: 12,  hinge: 'left'   },
+                { wall: 'v', x: 10, y1: 14, y2: 17, hinge: 'top' },
+                { wall: 'h', x1: 2,  x2: 5,  y: 0,   hinge: 'left' },
+                { wall: 'v', x: 12, y1: 8, y2: 11, hinge: 'top' },
+                { wall: 'v', x: 18, y1: 8, y2: 11, hinge: 'top' },
             ]
 
             const dataByRoom = Object.fromEntries(rooms.map((r) => [r.sensor_room, r]))
 
-            console.log(sensors)
-
-
+            // Existing sensor polling (unchanged, just with a .catch)
             useEffect(() => {
-
                 const timer = setInterval(() => {
-                    fetch("http://65.2.233.209:5000/api/sensors")
+                    fetch(`${API_BASE}/api/sensors`)
                     .then(res => res.json())
                     .then(json => setSensors(json.data))
+                    .catch(err => console.error("sensor fetch failed:", err))
                 }, 5000)
-
                 return () => clearInterval(timer)
-
             }, []);
 
-            // Full pixel size of the drawing in its own coordinate space.
-            // This is used for the viewBox only -- NOT as the rendered on-screen size.
+            // NEW: message polling. Adjust the URL / response shape to match your server.
+            // Expected: { data: [ { id: 1, text: "hello", timestamp: "2025-01-01T10:00:00Z" }, ... ] }
+            useEffect(() => {
+                const load = () => {
+                    const url = `${API_BASE}/api/messages`;
+                    console.log("fetching", url);
+                    return fetch(url)
+                    .then(res => {
+                        if (!res.ok) throw new Error(`HTTP ${res.status} from /api/messages`);
+                        return res.json();
+                    })
+                    .then(json => {
+                        setMessages(json.data || []);
+                        setMsgError(null);
+                    })
+                    .catch(err => {
+                        console.error("message fetch failed:", err);
+                        setMsgError("Could not load messages: " + err.message);
+                    });
+                };
+
+                load();                                   // fetch immediately on page load
+                const timer = setInterval(load, 5000);
+                return () => clearInterval(timer)
+            }, []);
+
             const svgFullWidth = px(TOTAL_W) + PAD * 2;
             const svgFullHeight = px(TOTAL_H) + PAD * 2;
 
+            console.log("sensors : ", sensors)
+            console.log("messages : ",messages)
+
             return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'Arial, sans-serif', paddingTop: '16px', width: '100%' }}>
-                    <h2 style={{ marginBottom: '4px', fontSize: 'clamp(16px, 4vw, 22px)', textAlign: 'center', padding: '0 12px' }}>Sensor Data</h2>
-                    {sensors.length > 0 ?
-                        <div style={{ background: '#fff', padding: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', width: '100%', maxWidth: svgFullWidth + 'px', boxSizing: 'border-box' }}>
-                            <svg
-                                viewBox={`0 0 ${svgFullWidth} ${svgFullHeight}`}
-                                preserveAspectRatio="xMidYMid meet"
-                                style={{ width: '100%', height: 'auto', display: 'block' }}
-                            >
+                <div className="layout">
 
-                                <g transform={`translate(${PAD}, ${PAD})`}>
+                    {/* LEFT: your existing page */}
+                    <div className="main-pane">
+                        <h2 style={{ marginBottom: '4px', fontSize: 'clamp(16px, 4vw, 22px)', textAlign: 'center', padding: '0 12px' }}>Sensor Data</h2>
+                        {sensors.length > 0 ?
+                            <div style={{ background: '#fff', padding: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', width: '100%', maxWidth: svgFullWidth + 'px', boxSizing: 'border-box' }}>
+                                <svg
+                                    viewBox={`0 0 ${svgFullWidth} ${svgFullHeight}`}
+                                    preserveAspectRatio="xMidYMid meet"
+                                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                                >
+                                    <g transform={`translate(${PAD}, ${PAD})`}>
 
-                                    {/* Room fills + labels */}
-                                    {sensors.map((s) => {
+                                        {sensors.map((s) => {
+                                            const room_dim = dataByRoom[s.sensor_room]
+                                            if (!room_dim) {
+                                                console.warn("No matching room found for sensor id:", s.sensor_room);
+                                                return null;
+                                            }
 
-                                        const room_dim = dataByRoom[s.sensor_room]
-                                        if (!room_dim) {
-                                            console.warn("No matching room found for sensor id:", s.sensor_room);
-                                            return null;
-                                        }
+                                            const occupied = s.status === "DETECTED";
+                                            const cx = px(room_dim.x) + px(room_dim.w) / 2;
+                                            const cy = px(room_dim.y) + px(room_dim.h) / 2;
 
-                                        const occupied = s.status === "DETECTED";
+                                            return (
+                                                <g key={s.sensor_room}>
+                                                    <rect
+                                                        x={px(room_dim.x)}
+                                                        y={px(room_dim.y)}
+                                                        width={px(room_dim.w)}
+                                                        height={px(room_dim.h)}
+                                                        fill={occupied ? "#c3e88d" : room_dim.fillColor}
+                                                    />
+                                                    <SensorStatusIcon
+                                                        sensor_status={s.sensor_status}
+                                                        x={px(room_dim.x + room_dim.w) - 28}
+                                                        y={px(room_dim.y) + 8}
+                                                    />
+                                                    <text x={cx} y={cy - 16} textAnchor="middle" fontSize={13} fontWeight="700" fill="#333">
+                                                        {room_dim.room}
+                                                    </text>
+                                                    <text x={cx} y={cy + 18} textAnchor="middle" fontSize={10} fill="#333">
+                                                        {new Date(s.timestamp).toLocaleDateString()}
+                                                    </text>
+                                                    <text x={cx} y={cy + 32} textAnchor="middle" fontSize={10} fill="#333">
+                                                        {occupied ? "Occupied since" : "Empty since"} {new Date(s.timestamp).toLocaleTimeString()}
+                                                    </text>
+                                                </g>
+                                            )
+                                        })}
 
-                                        const cx = px(room_dim.x) + px(room_dim.w) / 2;
-                                        const cy = px(room_dim.y) + px(room_dim.h) / 2;
+                                        {rooms.map((room) => (
+                                            <rect
+                                                key={"wall-" + room.sensor_room}
+                                                x={px(room.x)}
+                                                y={px(room.y)}
+                                                width={px(room.w)}
+                                                height={px(room.h)}
+                                                fill="none"
+                                                stroke="#333"
+                                                strokeWidth={WALL}
+                                            />
+                                        ))}
 
-                                        return (
-                                            <g key={s.sensor_room}>
-                                                <rect
-                                                    x={px(room_dim.x)}
-                                                    y={px(room_dim.y)}
-                                                    width={px(room_dim.w)}
-                                                    height={px(room_dim.h)}
-                                                    fill={occupied ? "#c3e88d" : room_dim.fillColor}
-                                                />
-
-                                                {/* Sensor status icon - top-right corner of the room */}
-                                                <SensorStatusIcon
-                                                    sensor_status={s.sensor_status}
-                                                    x={px(room_dim.x + room_dim.w) - 28}
-                                                    y={px(room_dim.y) + 8}
-                                                />
-
-                                                <text x={cx} y={cy - 16} textAnchor="middle" fontSize={13} fontWeight="700" fill="#333">
-                                                    {room_dim.room}
-                                                </text>
-                                                <text x={cx} y={cy + 18} textAnchor="middle" fontSize={10} fill="#333">
-                                                    {new Date(s.timestamp).toLocaleDateString()}
-                                                </text>
-                                                <text x={cx} y={cy + 32} textAnchor="middle" fontSize={10} fill="#333">
-                                                    {occupied ? "Occupied since" : "Empty since"} {new Date(s.timestamp).toLocaleTimeString()}
-                                                </text>
-                                            </g>
-                                        )
-                                    })}
-
-                                    {/* Interior walls (drawn as thick lines, skipping door gaps) */}
-                                    {rooms.map((room) => (
-                                        <rect
-                                            key={"wall-" + room.sensor_room}
-                                            x={px(room.x)}
-                                            y={px(room.y)}
-                                            width={px(room.w)}
-                                            height={px(room.h)}
-                                            fill="none"
-                                            stroke="#333"
-                                            strokeWidth={WALL}
-                                        />
-                                    ))}
-
-                                    {/* Door gaps: white-out the wall line + draw door leaf */}
-                                    {doors.map((d, i) => {
-                                        if (d.wall === 'v') {
-                                            const x = px(d.x);
-                                            const y1 = px(d.y1);
-                                            const y2 = px(d.y2);
+                                        {doors.map((d, i) => {
+                                            if (d.wall === 'v') {
+                                                const x = px(d.x);
+                                                const y1 = px(d.y1);
+                                                const y2 = px(d.y2);
+                                                return (
+                                                    <g key={"door-" + i}>
+                                                        <line x1={x} y1={y1} x2={x} y2={y2} stroke="#fff" strokeWidth={WALL + 2} />
+                                                        <line x1={x} y1={y1} x2={x} y2={y2} stroke="#8a5a2b" strokeWidth={2} />
+                                                    </g>
+                                                );
+                                            }
+                                            const x1 = px(d.x1);
+                                            const x2 = px(d.x2);
+                                            const y = px(d.y);
                                             return (
                                                 <g key={"door-" + i}>
-                                                    <line x1={x} y1={y1} x2={x} y2={y2} stroke="#fff" strokeWidth={WALL + 2} />
-                                                    <line x1={x} y1={y1} x2={x} y2={y2} stroke="#8a5a2b" strokeWidth={2} />
+                                                    <line x1={x1} y1={y} x2={x2} y2={y} stroke="#fff" strokeWidth={WALL + 2} />
+                                                    <line x1={x1} y1={y} x2={x2} y2={y} stroke="#8a5a2b" strokeWidth={2} />
                                                 </g>
                                             );
-                                        }
-                                        const x1 = px(d.x1);
-                                        const x2 = px(d.x2);
-                                        const y = px(d.y);
-                                        return (
-                                            <g key={"door-" + i}>
-                                                <line x1={x1} y1={y} x2={x2} y2={y} stroke="#fff" strokeWidth={WALL + 2} />
-                                                <line x1={x1} y1={y} x2={x2} y2={y} stroke="#8a5a2b" strokeWidth={2} />
-                                            </g>
-                                        );
-                                    })}
+                                        })}
 
-                                    {/* Outer wall outline (thick, hatched) */}
-                                    <rect x={-WALL/2} y={-WALL/2} width={px(TOTAL_W) + WALL} height={px(TOTAL_H) + WALL}
-                                          fill="none" stroke="#222" strokeWidth={WALL + 2} />
+                                        <rect x={-WALL/2} y={-WALL/2} width={px(TOTAL_W) + WALL} height={px(TOTAL_H) + WALL}
+                                              fill="none" stroke="#222" strokeWidth={WALL + 2} />
+                                    </g>
+                                </svg>
+                            </div>
+                        : <div>Retrieving Data...</div>}
+                    </div>
 
-                                </g>
-
-                            </svg>
-
-                        </div>
-                    : <div>Retrieving Data...</div>}
+                    {/* RIGHT: scrolling chat-style messages */}
+                    <ChatPanel messages={messages} error={msgError} />
                 </div>
             )
-
         }
 
-        // Render the component into the root DOM element
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
